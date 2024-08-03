@@ -1,8 +1,0 @@
-POST http://localhost:5000/blog/create-blog
-Content-Type: "application/json"
-
-{
-    "title" : "WT",
-    "content" : "Web Technology",
-    "author_id" : "66ad2678de09842bd3f178dd"
-}
