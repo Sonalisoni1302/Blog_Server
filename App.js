@@ -9,6 +9,9 @@ const user = require("./Routers/UserRouters");
 const Blog = require("./Routers/BlogRouter");
 const Comment = require("./Routers/CommentRouters");
 
+// Middleware
+const Middleware = require("../server/Middleware/AuthMiddleware");
+
 // Use
 app.use(express.json());
 // app.use(express.urlencoded({extended : true}));

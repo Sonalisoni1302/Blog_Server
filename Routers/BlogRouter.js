@@ -1,10 +1,11 @@
 const { CreateBlogController, GetAllBlogsController, UpdateBlogController, DeleteBlogController, GetUserBlogsController } = require("../Controllers/BlogController");
 
 const express = require("express");
+const { AuthMiddleware } = require("../Middleware/AuthMiddleware");
 const router = express.Router();
 
 // CREATE NEW BLOG
-router.post("/create-blog", CreateBlogController);
+router.post("/create-blog", AuthMiddleware, CreateBlogController);
 
 // GET ALL BLOGS
 router.get("/get-all-blogs", GetAllBlogsController);
@@ -13,9 +14,9 @@ router.get("/get-all-blogs", GetAllBlogsController);
 router.get("/user-blogs/:id", GetUserBlogsController);
 
 // UPDATE BLOG
-router.put("/update-blog/:id", UpdateBlogController);
+router.put("/update-blog/:id", AuthMiddleware, UpdateBlogController);
 
 // DELETE BLOG
-router.delete("/delete-blog/:id", DeleteBlogController);
+router.delete("/delete-blog/:id", AuthMiddleware, DeleteBlogController);
 
 module.exports = router;

@@ -113,11 +113,13 @@ exports.signin = async(req,res) => {
             })
         }
         
-        // const token = await jwt.sign(emailMatch._id.toJSON(), process.env.SECRET_KEY);
+        const token = await jwt.sign({id : emailMatch._id, email : emailMatch.personal_Info.email}, process.env.SECRET_KEY, {expiresIn : "15d"});
+        console.log(token);
 
         return res.status(201).send({
             success : true,
-            message : "Login Successfully"
+            message : "Login Successfully",
+            token : token
         })
 
     }catch(err){
@@ -125,6 +127,30 @@ exports.signin = async(req,res) => {
         return res.status(500).send({
             success : false,
             message : "Error While SignIn",
+            err
+        })
+    }
+};
+
+
+
+
+//         <-------------------------------------- Get User Data --------------------------->
+
+exports.AuthUser = async(req, res) =>{
+    try{
+            const userData = req.user;
+            console.log(userData);
+            res.status(200).send({
+                success : true,
+                message : userData
+            })
+
+    }catch(err){
+        console.log(err);
+        res.status(500).send({
+            success : false,
+            message : "Error",
             err
         })
     }
