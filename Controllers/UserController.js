@@ -59,6 +59,7 @@ exports.signup = async(req,res)=>{
         username = await generateUserna(email);
         const newUser = new UserModel({personal_Info : {fullname, email, password, username}});
 
+        // Hashing Password
         const hass_password = await bcrypt.hash(password, 10);
         newUser.personal_Info.password = hass_password;
 
@@ -108,6 +109,7 @@ exports.signin = async(req,res) => {
             })
         }
         
+        // Matching Password
         const pswrdMatch = await bcrypt.compare(password, emailMatch.personal_Info.password);
         
         if(!pswrdMatch){
