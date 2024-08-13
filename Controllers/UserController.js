@@ -64,9 +64,13 @@ exports.signup = async(req,res)=>{
 
         await newUser.save();
 
+        // Generate Token
+        const Token = await jwt.sign({id : newUser._id, email : newUser.personal_Info.email}, process.env.SECRET_KEY, {expiresIn : "15d"});
+
         return res.status(201).send({
             success : true,
             message : "Ragistered SuccessFully",
+            Token : Token,
             newUser
         })
 
@@ -113,8 +117,9 @@ exports.signin = async(req,res) => {
             })
         }
         
+
+        // Generate Token
         const token = await jwt.sign({id : emailMatch._id, email : emailMatch.personal_Info.email}, process.env.SECRET_KEY, {expiresIn : "15d"});
-        console.log(token);
 
         return res.status(201).send({
             success : true,
@@ -131,7 +136,6 @@ exports.signin = async(req,res) => {
         })
     }
 };
-
 
 
 

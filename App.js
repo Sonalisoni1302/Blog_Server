@@ -12,9 +12,12 @@ const Comment = require("./Routers/CommentRouters");
 // Middleware
 const Middleware = require("../server/Middleware/AuthMiddleware");
 
+
 // Use
 app.use(express.json());
-// app.use(express.urlencoded({extended : true}));
+
+
+//  Routes 
 app.use("/user", user);
 app.use("/blog", Blog);
 app.use("/comment", Comment);
