@@ -6,31 +6,24 @@ const UserModel = require("../Models/UserModel");
 
 exports.CreateBlogController = async(req,res) => {
     try{
-        const {title, content, author_id} = req.body;
+        const {title, content} = req.body;
+        const author_id = req.user._id;
 
-        if(!title || !content || !author_id){
+        if(!title || !content){
             return res.status(400).send({
                 success : false,
                 message : "Please Fill all fields."
             })
         }
 
-        const existAuthor = await UserModel.findById(author_id);
-
-        if(!existAuthor){
-            return res.status(400).send({
-                success : false,
-                message : "Signup or Signin!!"
-            })
-        }
-
         const newBlog = new BlogModel({title, content, author_id});
         await newBlog.save();
 
-        existAuthor.Blogs.push(newBlog);
-        await existAuthor.save();
+        const user = await UserModel.findById(author_id);
+        user.Blogs.push(newBlog);
+        await user.save();
 
-        return res.status(201).send({
+        return res.status(200).send({
             success : true,
             message : "Blog Created",
             newBlog
@@ -112,19 +105,31 @@ exports.UpdateBlogController = async(req,res)=>{
     try{
         const {title, content} = req.body;
 
-        const update_blog = await BlogModel.findByIdAndUpdate(req.params.id, {title, content}, {new : true});
+        const Blog = await BlogModel.findById(req.params.id);
 
-        if(!update_blog){
+        if(!Blog){
             return res.status(400).send({
                 success : false,
                 message : "Blog not found!!",
             })
         }
 
-        return res.status(201).send({
+        if (Blog.author_id.toString() !== req.user._id.toString()) {
+            return res.status(403).send({
+                success: false,
+                message: "You are not authorized to update this blog"
+            });
+        }
+
+        Blog.title = title || Blog.title;
+        Blog.content = content || Blog.content;
+
+        await Blog.save();
+
+        return res.status(200).send({
             success : true,
             message : "Blog Update",
-            update_blog
+            Blog
         })
 
     }catch(error){
@@ -142,23 +147,32 @@ exports.UpdateBlogController = async(req,res)=>{
 
 exports.DeleteBlogController = async(req,res) => {
     try{
-        const del_blog = await BlogModel.findByIdAndDelete(req.params.id);
+        const Blog = await BlogModel.findById(req.params.id);
 
-        if(!del_blog){
+        if(!Blog){
             return res.status(400).send({
                 success : false,
-                message : "Blog not found!!"
+                message : "Blog not found!!",
             })
         }
 
-        const delUserBlog = await UserModel.findById(del_blog.author_id);
-        delUserBlog.Blogs.pull(del_blog);
+        if (Blog.author_id.toString() !== req.user._id.toString()) {
+            return res.status(403).send({
+                success: false,
+                message: "You are not authorized to update this blog"
+            });
+        }
+
+        await BlogModel.findByIdAndDelete(req.params.id);
+
+        const delUserBlog = await UserModel.findById(Blog.author_id);
+        delUserBlog.Blogs.pull(Blog);
         await delUserBlog.save();
 
         return res.status(201).send({
             success : true,
             message : "Blog Deleted",
-            del_blog
+            Blog
         })
 
     }catch(error){

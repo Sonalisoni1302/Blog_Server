@@ -9,21 +9,13 @@ const UserModel = require("../Models/UserModel");
 exports.CreateCommentController = async(req,res) =>{
     try{
 
-        const {content, post_Id, user_Id} = req.body;
+        const {content, post_Id} = req.body;
+        const user_Id = req.user._id;
 
-        if(!content || !post_Id || !user_Id){
+        if(!content || !post_Id){
             return res.status(400).send({
                 success : false,
                 message : "Please Fill All fields"
-            })
-        }
-
-        const existUser = await UserModel.findById(user_Id);
-
-        if(!existUser){
-            return res.status(400).send({
-                success : false,
-                message : "user_Id not Exist"
             })
         }
 
@@ -42,7 +34,7 @@ exports.CreateCommentController = async(req,res) =>{
         existBlog.Comments.push(newComment);
         await existBlog.save();
 
-        return res.status(201).send({
+        return res.status(200).send({
             success : true,
             message : "Comment SUccessfull",
             newComment
@@ -72,7 +64,7 @@ exports.GetAllCommentsController = async(req,res) =>{
             })
         }
 
-        return res.status(201).send({
+        return res.status(200).send({
             success : true,
             message : "Comments->",
             Blog_Comments
@@ -81,7 +73,7 @@ exports.GetAllCommentsController = async(req,res) =>{
     }catch(err){
         console.log(err);
         return res.status(500).send({
-            success : true,
+            success : false,
             message : "Error While posting comments!!",
             err
         })
@@ -111,7 +103,7 @@ exports.GetSingleCommentController = async(req,res)=>{
     }catch(err){
         console.log(err);
         return res.status(500).send({
-            success : true,
+            success : false,
             message : "Error While getting comment!!",
             err
         })
@@ -125,14 +117,23 @@ exports.UpdateCommentController = async(req,res) =>{
     try{
         const{content} = req.body;
 
-        const update_comment = await CommentModel.findByIdAndUpdate(req.params.id, {content}, {new:true});
+        const comment = await CommentModel.findById(req.params.id)
 
-        if(!update_comment){
+        if(!comment){
             return res.status(400).send({
                 success : false,
                 message : "Comment not Found!!"
             })
         }
+
+        if (comment.user_Id.toString() !== req.user._id.toString()) {
+            return res.status(403).send({
+                success: false,
+                message: "You are not authorized to update this comment"
+            });
+        }
+
+        const update_comment = await CommentModel.findByIdAndUpdate(req.params.id, {content}, {new:true});
 
         return res.status(201).send({
             success : true,
@@ -143,7 +144,7 @@ exports.UpdateCommentController = async(req,res) =>{
     }catch(err){
         console.log(err);
         return res.status(500).send({
-            success : true,
+            success : false,
             message : "Error While Updating comment!!",
             err
         })
@@ -156,14 +157,27 @@ exports.UpdateCommentController = async(req,res) =>{
 exports.DeleteCommentController = async(req,res)=>{
     try{
 
-        const del_comment = await CommentModel.findByIdAndDelete(req.params.id);
+        const comment = await CommentModel.findById(req.params.id);
 
-        if(!del_comment){
+        if(!comment){
             return res.status(404).send({
                 sucess : false,
                 message : "comment not found!!"
             })
         }
+
+        if (comment.user_Id.toString() !== req.user._id.toString()) {
+            return res.status(403).send({
+                success: false,
+                message: "You are not authorized to delete this comment"
+            });
+        }
+
+        const del_comment = await CommentModel.findByIdAndDelete(req.params.id);
+
+        const delUserComment = await BlogModel.findById(del_comment.post_Id);
+        delUserComment.Comments.pull(del_comment);
+        await delUserComment.save();
 
         return res.status(201).send({
             success : true,
@@ -174,7 +188,7 @@ exports.DeleteCommentController = async(req,res)=>{
     }catch(err){
         console.log(err);
         return res.status(500).send({
-            success : true,
+            success : false,
             message : "Error While Deleting comment!!",
             err
         })

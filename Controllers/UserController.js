@@ -63,11 +63,12 @@ exports.signup = async(req,res)=>{
         const hass_password = await bcrypt.hash(password, 10);
         newUser.personal_Info.password = hass_password;
 
-        await newUser.save();
-
         // Generate Token
         const Token = await jwt.sign({id : newUser._id, email : newUser.personal_Info.email}, process.env.SECRET_KEY, {expiresIn : "15d"});
 
+        await newUser.save();
+
+        
         return res.status(201).send({
             success : true,
             message : "Ragistered SuccessFully",
