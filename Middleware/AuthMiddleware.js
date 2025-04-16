@@ -8,7 +8,7 @@ exports.AuthMiddleware = async(req,res, next) => {
     try{
 
         const token = req.header("Authorization");
-
+    
         if(!token){
             res.status(404).send({
                 success: false,
@@ -16,7 +16,7 @@ exports.AuthMiddleware = async(req,res, next) => {
             })
         }
 
-        const jwtToken = token.replace("Bearer", "").trim();
+        const jwtToken = token.replace("Bearer ", "").trim();
 
         const verifyToken = jwt.verify(jwtToken, process.env.SECRET_KEY);
 

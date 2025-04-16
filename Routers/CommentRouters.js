@@ -1,15 +1,15 @@
 const express = require("express");
-const { CreateCommentController, GetAllCommentsController, GetSingleCommentController, UpdateCommentController, DeleteCommentController } = require("../Controllers/CommentController");
+const { CreateCommentController, GetAllCommentsController, GetSingleCommentController, UpdateCommentController, DeleteCommentController, GetReplyController } = require("../Controllers/CommentController");
 const { AuthMiddleware } = require("../Middleware/AuthMiddleware");
 const router = express.Router();
 
 
 // POST COMMENT
-router.post("/post-comment", AuthMiddleware, CreateCommentController);
+router.post("/add-comment", AuthMiddleware, CreateCommentController);
 
 
 // GET BLOG ALL COMMENTS 
-router.get("/get-comments/:id", GetAllCommentsController);
+router.post("/get-blog-comments", GetAllCommentsController);
 
 
 // GET SINGLE COMMENT
@@ -21,6 +21,9 @@ router.put("/update-comment/:id", AuthMiddleware, UpdateCommentController);
 
 
 // DELETE COMMENT
-router.delete("/delete-comment/:id", AuthMiddleware, DeleteCommentController);
+router.post("/delete-comment", AuthMiddleware, DeleteCommentController);
+
+//get-reply
+router.post("/get-replies", GetReplyController);
 
 module.exports = router;
