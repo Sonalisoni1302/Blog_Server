@@ -17,7 +17,7 @@ router.post("/all-latest-blogs-count", GetallLatestBlogsCount);
 
 
 // GET TRENDING BLOGS
-router.get("/trending-blogs", GetTrendingBlogsController);
+router.post("/trending-blogs", GetTrendingBlogsController);
 
 
 // GET USER BLOGS
