@@ -19,7 +19,7 @@ const Comment = require("./Routers/CommentRouters");
 const ntfcn = require("./Routers/NtfcnRouter");
 
 // Middleware
-const Middleware = require("../Blog_Server/Middleware/AuthMiddleware");
+const Middleware = require("./Middleware/AuthMiddleware");
 
 
 // Use
