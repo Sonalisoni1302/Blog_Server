@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 app.use(cors({
     origin: [
       "http://localhost:3000",
-      "https://bloghub-website.netlify.app/"
+      "https://bloghub-website.netlify.app"
     ],
     credentials: true
 }));
