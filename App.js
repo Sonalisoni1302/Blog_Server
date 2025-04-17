@@ -6,11 +6,12 @@ require("dotenv").config({path : "./.env"});
 const mongoose = require("mongoose");
 
 app.use(cors({
-    origin: 'http://localhost:3000', // Replace with your frontend URL
-    methods: 'GET,POST,PUT,DELETE',  // Allow specific methods if needed
-    credentials: true                // Enable if your frontend includes credentials (cookies)
+    origin: [
+      "http://localhost:3000",
+      "https://fanciful-dragon-b4367e.netlify.app"
+    ],
+    credentials: true
 }));
-
 
 // Routers
 const user = require("./Routers/UserRouters");
