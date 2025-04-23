@@ -98,7 +98,8 @@ exports.GetLetestBlogsController = async(req,res) =>{
         .populate("author_id", "personal_Info.profile_img personal_Info.username personal_Info.fullname")
         .sort({"createdAt" : -1}).select("title des banner activity Comments tags createdAt blog_Id")
         .skip(skipElement)
-        .limit(maxLimit);
+        .limit(maxLimit)
+        .lean();
 
         if(!blogs){
             return res.status(400).send({
@@ -107,7 +108,7 @@ exports.GetLetestBlogsController = async(req,res) =>{
             })
         }
 
-        return res.status(201).send({
+        return res.status(200).send({
             success : true,
             message : "All Blogs->",
             blogs
